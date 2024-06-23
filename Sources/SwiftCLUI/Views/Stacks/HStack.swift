@@ -5,8 +5,6 @@ import Foundation
 
 public struct HStack: View, ViewContainer, KeyPressObserver {
 
-    public var id: UUID = UUID()
-
     public let elements: [any View]
 
     private let spacing: Int
