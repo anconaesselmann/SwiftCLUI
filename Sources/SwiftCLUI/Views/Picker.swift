@@ -30,21 +30,18 @@ public struct Picker: View, KeyPressObserver {
         )
     }
 
-    public func keyPressed(
-        char: Character,
-        key: (code: ANSITerminal.ANSIKeyCode, meta: [ANSITerminal.ANSIMetaCode])
-    ) -> Bool {
-        if let intValue = Int(String(char)), intValue < elements.count {
-            set(selected: intValue)
-        } else {
-            if char == NonPrintableChar.enter.char() {
-                return true
-            }
-            if key.code == .up {
-                previous()
-            } else if key.code == .down {
-                next()
-            }
+    public func keyPressed(_ event: KeyPressEvent) -> Bool {
+        if let integer = event.key.integer, event.modifiers.isEmpty {
+            set(selected: integer)
+        } else if event.key == .up {
+            previous()
+        } else if event.key == .down {
+            next()
+        } else if
+            let npc = event.key.nonPrintableCharacter,
+            npc == .enter
+        {
+            return true
         }
         return false
     }

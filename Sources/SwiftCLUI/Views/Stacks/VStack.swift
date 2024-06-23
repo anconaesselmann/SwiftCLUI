@@ -3,7 +3,7 @@
 
 import Foundation
 
-public struct VStack: View {
+public struct VStack: View, KeyPressObserver {
 
     public var id: UUID = UUID()
 
@@ -29,19 +29,10 @@ public struct VStack: View {
             .joined(separator: Array(repeating: "\n", count: spacing).joined())
     }
 
-    public var string: String {
-        body.string
-    }
-}
-
-import ANSITerminal
-
-extension VStack: KeyPressObserver {
-
-    public func keyPressed(char: Character, key: (code: ANSITerminal.ANSIKeyCode, meta: [ANSITerminal.ANSIMetaCode])) -> Bool {
+    public func keyPressed(_ event: KeyPressEvent) -> Bool {
         for element in self.elements {
             if let observer = element as? KeyPressObserver {
-                if observer.keyPressed(char: char, key: key) {
+                if observer.keyPressed(event) {
                     return true
                 }
             }

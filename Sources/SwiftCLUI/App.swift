@@ -42,7 +42,8 @@ public class App {
             if keyPressed() {
                 let char = readChar()
                 let key = readKey()
-                if body.keyPressed(char: char, key: key) {
+                let event = KeyPressEvent(char: char, ansiKeyCode: key)
+                if body.keyPressed(event) {
                     stop()
                     return
                 }
