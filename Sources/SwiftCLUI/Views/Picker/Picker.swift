@@ -19,10 +19,7 @@ public struct Picker: View, KeyPressObserver {
         VStack {
             ForEach(data: elements.enumerated().map { ($0, $1)}) { (index, element) in
                 HStack(spacing: 1) {
-                    Text(index == selected
-                         ? "●".lightGreen
-                         : "○".foreColor(250)
-                    )
+                    PickerSelectionIndicator(index == selected)
                     Text(element)
                 }
             }
