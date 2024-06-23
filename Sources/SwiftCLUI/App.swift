@@ -7,10 +7,11 @@ import Combine
 
 public protocol App {
 
-    @ViewBuilder
-    var body: VStack { get }
+    associatedtype Content
+        where Content: View
 
-    func run()
+    @ViewBuilder
+    var body: Content { get }
 
     static func main() async
 
@@ -18,36 +19,44 @@ public protocol App {
 }
 
 public extension App {
-    func run() {
+    func run() async {
         cursorOff()
         let restoreCursor = readCursorPos().row
         clearScreen()
         let startingLine = readCursorPos().row
-        var bag: AnyCancellable? = body.elementsChangedObserver.objectWillChange
-            .sink {
-                self.draw(startingLine)
+        var bag: AnyCancellable?
+        var body: (any View) = body
+        if (body as? ObservableViewContainer) == nil {
+            body = VStack {
+                body
             }
-        draw(startingLine)
+        }
+        if let container = body as? ObservableViewContainer {
+            bag = container.elementsChangedObserver.objectWillChange
+                .sink {
+                    moveTo(startingLine + 1, 0)
+                    write(body.string)
+                }
+        }
+        moveTo(startingLine + 1, 0)
+        write(body.string)
         while true {
             clearBuffer()
             if keyPressed() {
                 let char = readChar()
                 let key = readKey()
                 let event = KeyPressEvent(char: char, ansiKeyCode: key)
-                if body.keyPressed(event) {
-                    moveTo(restoreCursor - 1, 0)
-                    return
+                if let keyObserving = body as? KeyPressObserver {
+                    if keyObserving.keyPressed(event) {
+                        moveTo(restoreCursor - 1, 0)
+                        return
+                    }
                 }
             }
         }
     }
 
-    private func draw(_ startingLine: Int) {
-        moveTo(startingLine + 1, 0)
-        write(body.string)
-    }
-
     public static func main() async {
-        Self().run()
+        await Self().run()
     }
 }

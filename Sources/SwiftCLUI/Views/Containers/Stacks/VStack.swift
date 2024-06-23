@@ -3,13 +3,13 @@
 
 import Foundation
 
-public struct VStack: View, ViewContainer, KeyPressObserver {
+public struct VStack: View, ObservableViewContainer, KeyPressObserver {
 
     public let elements: [any View]
 
     private let spacing: Int
 
-    internal var elementsChangedObserver: ElementsObserver
+    public var elementsChangedObserver: ElementsObserver
 
     public init(
         spacing: Int = 1,
