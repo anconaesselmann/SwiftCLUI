@@ -11,6 +11,10 @@ public protocol App {
     var body: VStack { get }
 
     func run()
+
+    static func main() async
+
+    init()
 }
 
 public extension App {
@@ -41,5 +45,9 @@ public extension App {
     private func draw(_ startingLine: Int) {
         moveTo(startingLine + 1, 0)
         write(body.string)
+    }
+
+    public static func main() async {
+        Self().run()
     }
 }
