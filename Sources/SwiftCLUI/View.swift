@@ -7,6 +7,7 @@ public protocol View {
     associatedtype V
         where V: View
 
+    @ViewBuilder
     var body: V { get }
 
     var string: String { get }

@@ -11,9 +11,17 @@ public struct VStack: View, ViewContainer, KeyPressObserver {
 
     internal var elementsChangedObserver: ElementsObserver
 
+    public init(
+        spacing: Int = 1,
+        @ViewBuilder
+        elements: () -> [any View]
+    ) {
+        self.init(spacing: spacing, elements())
+    }
+
     public init(spacing: Int = 1, _ elements: [any View]) {
         self.spacing = spacing
-        self.elements = elements
+        self.elements = elements.flatten()
         elementsChangedObserver = ElementsObserver()
         for view in elements {
             elementsChangedObserver.register(view)

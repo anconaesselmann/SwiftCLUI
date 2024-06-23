@@ -6,6 +6,8 @@ import ANSITerminal
 import Combine
 
 public protocol App {
+
+    @ViewBuilder
     var body: VStack { get }
 
     func run()

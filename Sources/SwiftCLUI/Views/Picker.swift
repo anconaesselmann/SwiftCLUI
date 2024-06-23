@@ -16,17 +16,17 @@ public struct Picker: View, KeyPressObserver {
     }
 
     public var body: some View {
-        VStack(
-            elements.enumerated().map { (index, element) in
-                HStack([
+        VStack {
+            ForEach(data: elements.enumerated().map { ($0, $1)}) { (index, element) in
+                HStack(spacing: 1) {
                     Text(index == selected
-                     ? "●".lightGreen
-                     : "○".foreColor(250)
-                    ),
+                         ? "●".lightGreen
+                         : "○".foreColor(250)
+                    )
                     Text(element)
-                ])
+                }
             }
-        )
+        }
     }
 
     public func keyPressed(_ event: KeyPressEvent) -> Bool {
