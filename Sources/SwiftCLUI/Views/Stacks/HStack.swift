@@ -3,11 +3,11 @@
 
 import Foundation
 
-public struct HStack: View, KeyPressObserver {
+public struct HStack: View, ViewContainer, KeyPressObserver {
 
     public var id: UUID = UUID()
 
-    private let elements: [any View]
+    public let elements: [any View]
 
     private let spacing: Int
 
@@ -27,16 +27,5 @@ public struct HStack: View, KeyPressObserver {
         elements
             .map { $0.string }
             .joined(separator: Array(repeating: " ", count: spacing).joined())
-    }
-
-    public func keyPressed(_ event: KeyPressEvent) -> Bool {
-        for element in self.elements {
-            if let observer = element as? KeyPressObserver {
-                if observer.keyPressed(event) {
-                    return true
-                }
-            }
-        }
-        return false
     }
 }
