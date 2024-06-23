@@ -5,38 +5,23 @@ import Foundation
 import ANSITerminal
 import Combine
 
-public class App {
+public protocol App {
+    var body: VStack { get }
 
-    private var restoreCursor: Int = 0
-    private var startingLine: Int = 0
+    func run()
+}
 
-    private var lines: [UUID: Int] = [:]
-
-    private let elementsChangedObserver: ElementsObserver = ElementsObserver()
-
-    private var bag: AnyCancellable?
-
-    public var body: VStack
-
-    public init(_ body: VStack) {
-        self.body = body
-    }
-
-    private func draw() {
-        moveTo(startingLine + 1, 0)
-        write(body.string)
-    }
-
-    public func run() {
+public extension App {
+    func run() {
         cursorOff()
-        restoreCursor = readCursorPos().row
+        let restoreCursor = readCursorPos().row
         clearScreen()
-        startingLine = readCursorPos().row
-        bag = body.elementsChangedObserver.objectWillChange
-            .sink { [weak self] in
-                self?.draw()
+        let startingLine = readCursorPos().row
+        var bag: AnyCancellable? = body.elementsChangedObserver.objectWillChange
+            .sink {
+                self.draw(startingLine)
             }
-        draw()
+        draw(startingLine)
         while true {
             clearBuffer()
             if keyPressed() {
@@ -44,14 +29,15 @@ public class App {
                 let key = readKey()
                 let event = KeyPressEvent(char: char, ansiKeyCode: key)
                 if body.keyPressed(event) {
-                    stop()
+                    moveTo(restoreCursor - 1, 0)
                     return
                 }
             }
         }
     }
 
-    private func stop() {
-        moveTo(restoreCursor - 1, 0)
+    private func draw(_ startingLine: Int) {
+        moveTo(startingLine + 1, 0)
+        write(body.string)
     }
 }

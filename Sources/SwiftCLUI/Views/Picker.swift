@@ -2,7 +2,6 @@
 //
 
 import Foundation
-import ANSITerminal
 
 public struct Picker: View, KeyPressObserver {
 
