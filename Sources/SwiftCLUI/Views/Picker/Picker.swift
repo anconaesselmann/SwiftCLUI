@@ -5,8 +5,8 @@ import Foundation
 
 public struct Picker: View {
 
-    public var id: UUID = UUID()
-    
+    public var id: UUID = UUID(uuidString: "5CF2A3B3-D6C1-47BC-809B-3DB5B1E00305")!
+
     @State
     internal var selected: Int
 

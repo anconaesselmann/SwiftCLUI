@@ -5,7 +5,7 @@ import Foundation
 
 public struct Toggle: View {
 
-    let id = UUID()
+    public var id: UUID = UUID(uuidString: "1EE203AE-F6AB-4DF9-9C84-F596365FEA29")!
 
     @State
     internal var selected: Bool
