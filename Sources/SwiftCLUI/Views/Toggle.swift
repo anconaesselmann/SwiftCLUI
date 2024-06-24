@@ -18,11 +18,10 @@ public struct Toggle: View {
     }
 
     public var body: some View {
-        HStack {
-            Text(selected
-                 ? "-".foreColor(250) + "●".lightGreen
-                 : "○-".foreColor(250))
-        }.onKeyPressed(id) { event in
+        Text(selected
+             ? "-".foreColor(250) + "●".lightGreen
+             : "○-".foreColor(250)
+        ).onKeyPressed(id) { event in
             keyPressed(event)
         }
     }
