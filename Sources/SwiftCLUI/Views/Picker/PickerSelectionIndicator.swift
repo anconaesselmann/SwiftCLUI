@@ -5,7 +5,7 @@ import Foundation
 
 public struct PickerSelectionIndicator: View {
 
-    let selected: Bool
+    private let selected: Bool
 
     public init(_ selected: Bool) {
         self.selected = selected
