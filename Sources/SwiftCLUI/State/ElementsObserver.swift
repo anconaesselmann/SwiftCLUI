@@ -10,17 +10,9 @@ public class ElementsObserver: SwiftCLUIState {
 
     private var bag = Set<AnyCancellable>()
 
-    public init() {
-        
-    }
+    public init() { }
 
     public func register(_ view: some View) {
-        Mirror(reflecting: view).children.forEach { child in
-            if let state = (child.value as? (any SwiftCLUIState)) {
-                state.objectWillChange.sink { [weak self] in
-                    self?.objectWillChange.send(())
-                }.store(in: &bag)
-            }
-        }
+        bag += view.bind(to: objectWillChange)
     }
 }
