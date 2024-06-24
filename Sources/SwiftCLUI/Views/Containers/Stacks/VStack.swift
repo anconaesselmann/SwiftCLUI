@@ -3,7 +3,7 @@
 
 import Foundation
 
-public struct VStack: View, ObservableViewContainer, KeyPressObserver {
+public struct VStack: View, ObservableViewContainer {
 
     public let elements: [any View]
 

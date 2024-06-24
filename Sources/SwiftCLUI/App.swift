@@ -46,14 +46,34 @@ public extension App {
                 let char = readChar()
                 let key = readKey()
                 let event = KeyPressEvent(char: char, ansiKeyCode: key)
-                if let keyObserving = body as? KeyPressObserver {
-                    if keyObserving.keyPressed(event) {
+                Environment.shared.keyPressEvent.send(event)
+                let (shouldExit, value) = processAppState()
+                if shouldExit {
+                    if let value {
                         moveTo(restoreCursor - 1, 0)
-                        return
+                        write(value)
                     }
+                    moveTo(restoreCursor, 0)
+                    return
                 }
             }
         }
+    }
+
+    private func processAppState() -> (shouldExit: Bool, value: String?) {
+        switch Environment.shared.appState.value {
+        case .success(let state):
+            switch state {
+            case .value(let value):
+                return (true, value)
+            case .success:
+                return (true, nil)
+            case .running: ()
+            }
+        case .failure(let error):
+            return (true, nil)
+        }
+        return (false, nil)
     }
 
     public static func main() async {

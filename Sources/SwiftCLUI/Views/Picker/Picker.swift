@@ -3,16 +3,21 @@
 
 import Foundation
 
-public struct Picker: View, KeyPressObserver {
+public struct Picker: View {
 
+    public var id: UUID = UUID()
+    
     @State
     internal var selected: Int
 
     private let elements: [String]
 
-    public init(selected: Int = 0, elements: [String]) { 
+    var onSelected: (String) -> Void
+
+    public init(selected: Int = 0, elements: [String], onSelected: @escaping (String) -> Void) {
         self.selected = selected
         self.elements = elements
+        self.onSelected = onSelected
     }
 
     public var body: some View {
@@ -23,10 +28,12 @@ public struct Picker: View, KeyPressObserver {
                     Text(element)
                 }
             }
+        }.onKeyPressed(id) { event in
+            keyPressed(event)
         }
     }
 
-    public func keyPressed(_ event: KeyPressEvent) -> Bool {
+    public func keyPressed(_ event: KeyPressEvent) {
         if let integer = event.key.integer, event.modifiers.isEmpty {
             set(selected: integer)
         } else if event.key == .up {
@@ -37,9 +44,8 @@ public struct Picker: View, KeyPressObserver {
             let npc = event.key.nonPrintableCharacter,
             npc == .enter
         {
-            return true
+            onSelected(elements[selected])
         }
-        return false
     }
 
     private func next() {
