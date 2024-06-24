@@ -24,37 +24,40 @@ public extension App {
         let restoreCursor = readCursorPos().row
         clearScreen()
         let startingLine = readCursorPos().row
-        var bag: AnyCancellable?
-        var body: (any View) = body
-        if (body as? ObservableViewContainer) == nil {
-            body = VStack {
-                body
-            }
-        }
-        if let container = body as? ObservableViewContainer {
-            bag = container.elementsChangedObserver.objectWillChange
-                .sink {
-                    moveTo(startingLine + 1, 0)
-                    write(body.string)
+        var bag: Set<AnyCancellable> = []
+        withExtendedLifetime(bag) {
+            var body: (any View) = body
+            if (body as? ObservableViewContainer) == nil {
+                body = VStack {
+                    body
                 }
-        }
-        moveTo(startingLine + 1, 0)
-        write(body.string)
-        while true {
-            clearBuffer()
-            if keyPressed() {
-                let char = readChar()
-                let key = readKey()
-                let event = KeyPressEvent(char: char, ansiKeyCode: key)
-                Environment.shared.keyPressEvent.send(event)
-                let (shouldExit, value) = processAppState()
-                if shouldExit {
-                    if let value {
-                        moveTo(restoreCursor - 1, 0)
-                        write(value)
+            }
+            if let container = body as? ObservableViewContainer {
+                let subscription = container.elementsChangedObserver.objectWillChange
+                    .sink {
+                        moveTo(startingLine + 1, 0)
+                        write(body.string)
                     }
-                    moveTo(restoreCursor, 0)
-                    return
+                    .store(in: &bag)
+            }
+            moveTo(startingLine + 1, 0)
+            write(body.string)
+            while true {
+                clearBuffer()
+                if keyPressed() {
+                    let char = readChar()
+                    let key = readKey()
+                    let event = KeyPressEvent(char: char, ansiKeyCode: key)
+                    Environment.shared.keyPressEvent.send(event)
+                    let (shouldExit, value) = processAppState()
+                    if shouldExit {
+                        if let value {
+                            moveTo(restoreCursor - 1, 0)
+                            write(value)
+                        }
+                        moveTo(restoreCursor, 0)
+                        return
+                    }
                 }
             }
         }
