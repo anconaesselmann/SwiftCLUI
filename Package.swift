@@ -13,12 +13,13 @@ let package = Package(
             targets: ["SwiftCLUI"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/pakLebah/ANSITerminal", from: "0.0.3")
+        .package(url: "https://github.com/pakLebah/ANSITerminal", from: "0.0.3"),
+        .package(url: "https://github.com/anconaesselmann/Ansi256Color", from: "0.0.1")
     ],
     targets: [
         .target(
             name: "SwiftCLUI",
-            dependencies: ["ANSITerminal"]
+            dependencies: ["ANSITerminal", "Ansi256Color"]
         ),
         .testTarget(
             name: "SwiftCLUITests",

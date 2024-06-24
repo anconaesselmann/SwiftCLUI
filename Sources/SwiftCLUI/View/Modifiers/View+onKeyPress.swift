@@ -13,5 +13,5 @@ extension View {
 }
 
 internal struct KeyPressObserverView<V>: View where V: View {
-    var body: V
+    let body: V
 }
