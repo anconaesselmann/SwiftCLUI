@@ -5,7 +5,7 @@ import Foundation
 import ANSITerminal
 import Combine
 
-public protocol App {
+public protocol App: View {
 
     associatedtype Content
         where Content: View
@@ -24,6 +24,7 @@ public extension App {
         let restoreCursor = readCursorPos().row
         clearScreen()
         let startingLine = readCursorPos().row
+        let shouldUpdate = PassthroughSubject<Void, Never>()
         var bag: Set<AnyCancellable> = []
         withExtendedLifetime(bag) {
             var body: (any View) = body
@@ -32,14 +33,12 @@ public extension App {
                     body
                 }
             }
-            if let container = body as? ObservableViewContainer {
-                let subscription = container.elementsChangedObserver.objectWillChange
-                    .sink {
-                        moveTo(startingLine + 1, 0)
-                        write(body.string)
-                    }
-                    .store(in: &bag)
+            bag += body.bind(to: shouldUpdate)
+            shouldUpdate.sink {
+                moveTo(startingLine + 1, 0)
+                write(body.string)
             }
+            .store(in: &bag)
             moveTo(startingLine + 1, 0)
             write(body.string)
             while true {

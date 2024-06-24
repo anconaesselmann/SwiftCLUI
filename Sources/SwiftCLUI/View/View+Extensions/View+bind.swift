@@ -14,6 +14,10 @@ extension View {
                 state.objectWillChange.sink {
                     subject.send(())
                 }.store(in: &bag)
+            } else if let states = (child.value) as? (any ObservableViewContainer) {
+                states.elementsChangedObserver.objectWillChange.sink {
+                    subject.send(())
+                }.store(in: &bag)
             }
         }
         return bag
