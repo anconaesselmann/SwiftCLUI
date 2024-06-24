@@ -3,7 +3,7 @@
 
 import Foundation
 
-extension View {
+public extension View {
     func background(_ color: Color) -> some View {
         BackgroundView(color: color, body: self)
     }

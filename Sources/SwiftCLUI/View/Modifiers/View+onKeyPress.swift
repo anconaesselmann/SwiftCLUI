@@ -3,7 +3,7 @@
 
 import Foundation
 
-extension View {
+public extension View {
     func onKeyPressed(_ id: UUID, _ callback: @escaping (KeyPressEvent) -> Void) -> some View {
         Subscriptions.shared.values[id] = Environment.shared.keyPressEvent.sink { event in
             callback(event)

@@ -27,7 +27,6 @@ public struct Picker: View {
                     PickerSelectionIndicator(index == selected)
                     Text(element)
                 }
-                .background(.green)
             }
         }.onKeyPressed(id) { event in
             keyPressed(event)

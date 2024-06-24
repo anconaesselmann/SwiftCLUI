@@ -14,7 +14,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pakLebah/ANSITerminal", from: "0.0.3"),
-        .package(url: "https://github.com/anconaesselmann/Ansi256Color", from: "0.0.1")
+        .package(url: "https://github.com/anconaesselmann/Ansi256Color", from: "0.0.2")
+//        .package(url: "../Ansi256Color", from: "0.0.2")
     ],
     targets: [
         .target(
