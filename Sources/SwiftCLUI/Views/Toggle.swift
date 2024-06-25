@@ -27,11 +27,16 @@ public struct Toggle: View {
     }
 
     public func keyPressed(_ event: KeyPressEvent) {
-        if event.key == .left {
-            selected = false
-        } else if event.key == .right {
-            selected = true
+        let previousState = selected
+        let newState: Bool
+        switch event.key {
+        case .left: newState = false
+        case .right: newState = true
+        default: return
         }
-        onChange(selected)
+        if previousState != newState {
+            selected = newState
+            onChange(newState)
+        }
     }
 }
