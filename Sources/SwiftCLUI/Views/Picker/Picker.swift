@@ -49,14 +49,17 @@ public struct Picker: View {
     }
 
     private func next() {
-        selected = min(elements.count - 1, selected + 1)
+        set(selected: selected + 1)
     }
 
     private func previous() {
-        selected = max(0, selected - 1)
+        set(selected: selected - 1)
     }
 
     private func set(selected value: Int) {
-        selected = min(max(0, value), elements.count - 1)
+        let new = min(max(0, value), elements.count - 1)
+        if new != selected {
+            selected = new
+        }
     }
 }
