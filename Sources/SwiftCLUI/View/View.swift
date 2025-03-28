@@ -3,6 +3,7 @@
 
 import Foundation
 
+@MainActor
 public protocol View {
     associatedtype V
         where V: View

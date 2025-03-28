@@ -3,6 +3,7 @@
 
 import Foundation
 
+@MainActor
 public protocol NoneDrawingContainer: ViewContainer { }
 
 public extension NoneDrawingContainer where Self: View {

@@ -3,6 +3,7 @@
 
 import Foundation
 
+@MainActor
 @resultBuilder
 public struct ViewBuilder {
     static func buildBlock() -> some View { EmptyView() }

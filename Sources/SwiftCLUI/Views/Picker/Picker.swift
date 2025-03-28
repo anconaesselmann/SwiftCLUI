@@ -12,6 +12,7 @@ public struct Picker<Element>: View {
 
     private let elements: [Element]
 
+    @MainActor
     var onSelected: (Element) -> Void
     
     @ViewBuilder
@@ -22,7 +23,7 @@ public struct Picker<Element>: View {
         elements: [Element],
         @ViewBuilder
         content: @escaping (Element, Bool) -> any View,
-        onSelected: @escaping (Element) -> Void
+        onSelected: @MainActor @escaping (Element) -> Void
     ) {
         self.content = content
         self.selected = selected

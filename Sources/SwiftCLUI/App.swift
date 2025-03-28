@@ -5,6 +5,7 @@ import Foundation
 import ANSITerminal
 import Combine
 
+@MainActor
 public protocol App: View {
 
     associatedtype Content
