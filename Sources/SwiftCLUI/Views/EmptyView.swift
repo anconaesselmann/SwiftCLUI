@@ -4,5 +4,7 @@
 import Foundation
 
 public struct EmptyView: View {
+    public init() { }
+    
     public var body: some View { "" }
 }
