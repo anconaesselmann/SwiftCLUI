@@ -8,6 +8,14 @@ public class Environment {
 
     public enum AppEvent {
         case success, running, value(String)
+        
+        var isRunning: Bool {
+            switch self {
+            case .running: return true
+            case .success: return false
+            case .value: return false
+            }
+        }
     }
 
     private init() {}
@@ -23,4 +31,14 @@ internal class Subscriptions {
     static let shared = Subscriptions()
 
     var values: [UUID: AnyCancellable] = [:]
+}
+
+
+extension Result where Success == Environment.AppEvent {
+    var isRunning: Bool {
+        switch self {
+        case .success(let event): return event.isRunning
+        case .failure: return false
+        }
+    }
 }
