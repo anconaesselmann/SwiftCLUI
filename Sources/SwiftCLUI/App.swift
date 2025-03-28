@@ -20,63 +20,62 @@ public protocol App: View {
 }
 
 public extension App {
-    func run() async {
+    @discardableResult
+    func run() async -> Set<AnyCancellable> {
         cursorOff()
         let restoreCursor = readCursorPos().row
         clearScreen()
         let startingLine = readCursorPos().row
         let shouldUpdate = PassthroughSubject<Void, Never>()
         var bag: Set<AnyCancellable> = []
-        withExtendedLifetime(bag) {
-            var body: (any View) = body
-            if (body as? ObservableViewContainer) == nil {
-                body = VStack {
-                    body
-                }
+        var body: (any View) = body
+        if (body as? ObservableViewContainer) == nil {
+            body = VStack {
+                body
             }
-            bag += body.bind(to: shouldUpdate)
-            shouldUpdate.sink {
-                moveTo(startingLine + 1, 0)
-                write(body.string)
-            }
-            .store(in: &bag)
+        }
+        bag += body.bind(to: shouldUpdate)
+        shouldUpdate.sink {
             moveTo(startingLine + 1, 0)
             write(body.string)
-            while true {
+        }
+        .store(in: &bag)
+        moveTo(startingLine + 1, 0)
+        write(body.string)
+        repeat {
+            do {
                 clearBuffer()
                 if keyPressed() {
-                    let char = readChar()
-                    let key = readKey()
-                    let event = KeyPressEvent(char: char, ansiKeyCode: key)
-                    Environment.shared.keyPressEvent.send(event)
-                    let (shouldExit, value) = processAppState()
+                    let (shouldExit, exitValue) = processKeyPress()
                     if shouldExit {
-                        if let value {
-                            moveTo(restoreCursor - 1, 0)
-                            write(value)
-                        }
-                        moveTo(restoreCursor, 0)
-                        return
+                        exit(exitValue, cursorPositon: restoreCursor)
+                        return bag
                     }
                 }
+                try await Task.sleep(500_000)
+            } catch {
+                break
             }
-        }
+        } while Environment.shared.appState.value.isRunning
+        return bag
     }
-
-    private func processAppState() -> (shouldExit: Bool, value: String?) {
-        switch Environment.shared.appState.value {
-        case .success(let state):
-            switch state {
-            case .value(let value):
-                return (true, value)
-            case .success:
-                return (true, nil)
-            case .running: ()
-            }
-        case .failure(let error):
-            return (true, nil)
+    
+    private func processKeyPress() -> (shouldExit: Bool, value: String?) {
+        let environment = Environment.shared
+        let char = readChar()
+        let key = readKey()
+        let event = KeyPressEvent(char: char, ansiKeyCode: key)
+        environment.keyPressEvent.send(event)
+        return environment.appState.value.exitValues
+    }
+    
+    private func exit(_ exitValue: String?, cursorPositon: Int) {
+        if let exitValue {
+            moveTo(cursorPositon - 1, 0)
+            write(exitValue)
         }
-        return (false, nil)
+        moveTo(cursorPositon, 0)
+        cursorOn()
     }
 
     public static func main() async {
