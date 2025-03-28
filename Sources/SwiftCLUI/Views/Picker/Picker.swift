@@ -3,18 +3,28 @@
 
 import Foundation
 
-public struct Picker: View {
+public struct Picker<Element>: View {
 
     public var id: UUID = UUID(uuidString: "5CF2A3B3-D6C1-47BC-809B-3DB5B1E00305")!
 
     @State
     internal var selected: Int
 
-    private let elements: [String]
+    private let elements: [Element]
 
-    var onSelected: (String) -> Void
+    var onSelected: (Element) -> Void
+    
+    @ViewBuilder
+    private let content: (Element, Bool) -> any View
 
-    public init(selected: Int = 0, elements: [String], onSelected: @escaping (String) -> Void) {
+    public init(
+        selected: Int = 0,
+        elements: [Element],
+        @ViewBuilder
+        content: @escaping (Element, Bool) -> any View,
+        onSelected: @escaping (Element) -> Void
+    ) {
+        self.content = content
         self.selected = selected
         self.elements = elements
         self.onSelected = onSelected
@@ -25,7 +35,7 @@ public struct Picker: View {
             ForEach(data: elements.enumerated().map { ($0, $1)}) { (index, element) in
                 HStack(spacing: 1) {
                     PickerSelectionIndicator(index == selected)
-                    Text(element)
+                    content(element, index == selected)
                 }
             }
         }.onKeyPressed(id) { event in
