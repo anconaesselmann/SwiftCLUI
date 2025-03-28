@@ -7,6 +7,14 @@ public struct NoForegroundStyle: ForegroundStyle {
     public init() { }
     
     public func applied(to content: String) -> String {
+        content
+    }
+}
+
+public struct Normal: ForegroundStyle {
+    public init() { }
+    
+    public func applied(to content: String) -> String {
         content.normal
     }
 }
