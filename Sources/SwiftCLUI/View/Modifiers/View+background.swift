@@ -12,6 +12,10 @@ public extension View {
     func foregroundColor(_ color: Color) -> some View {
         self.string.foreColor(color.value)
     }
+    
+    func foreground(_ style: ForegroundStyle) -> some View {
+        style.applied(to: string)
+    }
 }
 
 internal struct BackgroundView<V>: View where V: View {
