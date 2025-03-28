@@ -16,6 +16,10 @@ public extension View {
     func foreground(_ style: ForegroundStyle) -> some View {
         style.applied(to: string)
     }
+    
+    func frame(width: Int) -> some View {
+        self.string.fixedWidth(UInt(width))
+    }
 }
 
 internal struct BackgroundView<V>: View where V: View {
