@@ -16,6 +16,17 @@ public class Environment {
             case .value: return false
             }
         }
+        
+        var exitValues: (shouldExit: Bool, value: String?) {
+            switch self {
+            case .value(let value):
+                return (true, value)
+            case .success:
+                return (true, nil)
+            case .running:
+                return (false, nil)
+            }
+        }
     }
 
     private init() {}
@@ -39,6 +50,15 @@ extension Result where Success == Environment.AppEvent {
         switch self {
         case .success(let event): return event.isRunning
         case .failure: return false
+        }
+    }
+    
+    var exitValues: (shouldExit: Bool, value: String?) {
+        switch self {
+        case .success(let state):
+            return state.exitValues
+        case .failure:
+            return (true, nil)
         }
     }
 }
