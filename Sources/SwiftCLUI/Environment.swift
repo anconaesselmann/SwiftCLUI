@@ -37,6 +37,26 @@ public class Environment {
     public let keyPressEvent = PassthroughSubject<KeyPressEvent, Never>()
 
     public let appState = CurrentValueSubject<Result<AppEvent, Error>, Never>(.success(.running))
+    
+    public let objectWillChange = PassthroughSubject<Void, Never>()
+    
+    public func exit(_ value: String? = nil, shouldUpdate: Bool = true) {
+        if shouldUpdate {
+            objectWillChange.send()
+        }
+        if let value {
+            appState.send(.success(.value(value)))
+        } else {
+            appState.send(.success(.success))
+        }
+    }
+    
+    public func exit(_ error: Error, shouldUpdate: Bool = true) {
+        if shouldUpdate {
+            objectWillChange.send()
+        }
+        appState.send(.failure(error))
+    }
 }
 
 internal class Subscriptions {

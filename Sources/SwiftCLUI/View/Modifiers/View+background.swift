@@ -3,13 +3,28 @@
 
 import Foundation
 import ANSITerminal
+import Ansi256Color
+
+public extension Ansi256Color {
+    var color: Color {
+        Color(self.value)
+    }
+}
 
 public extension View {
     func background(_ color: Color) -> some View {
         BackgroundView(color: color, body: self)
     }
     
+    func background(ansi color: Ansi256Color) -> some View {
+        BackgroundView(color: Color(color.value), body: self)
+    }
+    
     func foregroundColor(_ color: Color) -> some View {
+        self.string.foreColor(color.value)
+    }
+    
+    func foregroundColor(ansi color: Ansi256Color) -> some View {
         self.string.foreColor(color.value)
     }
     

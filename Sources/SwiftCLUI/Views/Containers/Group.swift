@@ -3,10 +3,12 @@
 
 import Foundation
 
-struct Group<Element>: View, NoneDrawingContainer
-    where Element: View
-{
+public struct Group: View, NoneDrawingContainer {
     public let elements: [any View]
+    
+    internal init(elements: [any View]) {
+        self.elements = elements
+    }
 
     public init(
         @ViewBuilder

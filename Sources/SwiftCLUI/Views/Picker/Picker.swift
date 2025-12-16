@@ -3,6 +3,21 @@
 
 import Foundation
 
+public struct Numbered: View {
+    
+    public let number: Int?
+    public let fixedWidht: UInt
+    
+    public init(number: Int?, fixedWidht: UInt) {
+        self.number = number
+        self.fixedWidht = fixedWidht
+    }
+    
+    public var body: some View {
+        Text("\(number != nil ? "\(number!)" : "")".fixedWidth(fixedWidht))
+    }
+}
+
 public struct Picker<Element>: View {
 
     public var id: UUID = UUID(uuidString: "5CF2A3B3-D6C1-47BC-809B-3DB5B1E00305")!
@@ -17,14 +32,18 @@ public struct Picker<Element>: View {
     
     @ViewBuilder
     private let content: (Element, Bool) -> any View
+    
+    private let numbered: Bool
 
     public init(
         selected: Int = 0,
+        numbered: Bool = false,
         elements: [Element],
         @ViewBuilder
         content: @escaping (Element, Bool) -> any View,
         onSelected: @MainActor @escaping (Element) -> Void
     ) {
+        self.numbered = numbered
         self.content = content
         self.selected = selected
         self.elements = elements
@@ -35,6 +54,7 @@ public struct Picker<Element>: View {
         VStack {
             ForEach(data: elements.enumerated().map { ($0, $1)}) { (index, element) in
                 HStack(spacing: 1) {
+                    Numbered(number: numbered ? index : nil, fixedWidht: numbered ? 1 : 0)
                     PickerSelectionIndicator(index == selected)
                     content(element, index == selected)
                 }
@@ -43,9 +63,25 @@ public struct Picker<Element>: View {
             keyPressed(event)
         }
     }
+    
+    private var keyPressCallbacks = [Character: (Element) -> Void]()
+    
+    public func onKeyPressed(
+        _ event: KeyPressEvent,
+        perform callback: @MainActor @escaping (Element) -> Void
+    ) -> Self {
+        var copy = self
+        guard let char = event.key.character else {
+            return copy
+        }
+        copy.keyPressCallbacks[char] = callback
+        return copy
+    }
 
-    public func keyPressed(_ event: KeyPressEvent) {
-        if let integer = event.key.integer, event.modifiers.isEmpty {
+    private func keyPressed(_ event: KeyPressEvent) {
+        if let character = event.key.character, let callback = keyPressCallbacks[character] {
+            callback(elements[selected])
+        } else if let integer = event.key.integer, event.modifiers.isEmpty {
             set(selected: integer)
         } else if event.key == .up {
             previous()

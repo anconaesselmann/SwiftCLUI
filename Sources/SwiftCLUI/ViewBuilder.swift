@@ -29,4 +29,20 @@ public extension ViewBuilder {
     static func buildBlock(_ views: (any View)...) -> [any View] {
         views
     }
+    
+    static func buildOptional(_ components: [any View]?) -> any View {
+        if let components {
+            Group(elements: components)
+        } else {
+            EmptyView()
+        }
+    }
+    
+    static func buildEither(first components: [any View]) -> any View {
+        Group(elements: components)
+    }
+    
+    static func buildEither(second components: [any View]) -> any View {
+        Group(elements: components)
+    }
 }

@@ -31,6 +31,8 @@ public struct VStack: View, ObservableViewContainer {
     public var body: some View {
         // TODO: Only works with one-line strings for now
         elements
+            .flatMap { ($0 as? Group)?.elements ?? [$0] }
+            .filter { type(of: $0) != EmptyView.self }
             .map { $0.string }
             .joined(separator: Array(repeating: "\n", count: spacing).joined())
     }
